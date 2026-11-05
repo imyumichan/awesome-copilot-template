@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- frame-ancestors/report-uri/sandbox are ignored in a meta CSP; Pages sends no headers. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://api.github.com https://raw.githubusercontent.com; img-src 'self' data:; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'">
+  <meta name="referrer" content="no-referrer">
+  <title>Agentic AI Assistant Plugin Bundler</title>
+  <link rel="stylesheet" href="app/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Agentic AI Assistant Plugin Bundler</h1>
+    <p class="subtitle">Compose agents, skills, prompts, instructions and scripts, edit plugin settings, then download a plugin package or publish it to GitHub.</p>
+  </header>
+
+  <section id="frame-notice" class="card" role="alert" hidden>
+    <p>This page does not run inside a frame, so token entry and publishing are disabled. <a href="" target="_blank" rel="noopener noreferrer">Open it in its own tab</a>.</p>
+  </section>
+
+  <main id="app">
+    <section class="card" aria-labelledby="source-h">
+      <h2 id="source-h">1. Source</h2>
+      <form id="source-form" class="row">
+        <label class="grow">Repository
+          <input id="src-repo" type="text" autocomplete="off" spellcheck="false" placeholder="imyumichan/awesome-copilot-template" required>
+        </label>
+        <label>Branch
+          <input id="src-branch" type="text" autocomplete="off" spellcheck="false" placeholder="main">
+        </label>
+        <button type="submit" id="load-btn">Load</button>
+        <button type="button" id="source-auth-btn">Sign in</button>
+      </form>
+      <p class="hint">Public repositories load without a token. For private repositories, sign in here first.</p>
+      <p id="source-notice" class="hint warn" role="alert" hidden></p>
+      <progress id="load-progress" hidden></progress>
+      <div id="source-messages" class="messages" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card" id="editor" aria-labelledby="content-h" hidden>
+      <div class="row between">
+        <h2 id="content-h">2. Content</h2>
+        <p id="plugin-meta" class="hint"></p>
+      </div>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Content type"></nav>
+      <div id="items-panel">
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <p><strong id="dz-title"></strong></p>
+          <p class="hint" id="dz-hint"></p>
+          <div class="upload-actions">
+            <button type="button" id="upload-files-btn">Choose .md files</button>
+            <button type="button" id="upload-folder-btn">Choose skill folder</button>
+          </div>
+          <input id="file-input" type="file" accept=".md,text/markdown" multiple hidden>
+          <input id="folder-input" type="file" webkitdirectory hidden>
+        </div>
+        <ul id="item-list" class="items"></ul>
+        <p id="empty-msg" class="hint" hidden>Nothing here yet. Upload a file to add one.</p>
+      </div>
+      <div id="config-panel" class="col" hidden>
+        <section class="config-card" aria-labelledby="meta-h">
+          <h3 id="meta-h">Plugin metadata</h3>
+          <form id="meta-form" class="col">
+            <div class="row">
+              <label class="grow">Name
+                <input id="meta-name" type="text" autocomplete="off" spellcheck="false" required>
+              </label>
+              <label>Version
+                <input id="meta-version" type="text" autocomplete="off" spellcheck="false" required>
+              </label>
+            </div>
+            <label>Description
+              <input id="meta-description" type="text" autocomplete="off" required>
+            </label>
+            <p id="meta-note" class="hint"></p>
+            <p id="meta-market" class="hint" role="alert" hidden></p>
+            <div class="row">
+              <button type="submit" id="meta-save" class="primary">Save metadata</button>
+              <span id="meta-dirty" class="hint warn" hidden>Unsaved changes</span>
+            </div>
+            <div id="meta-messages" class="messages" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+        <section class="config-card" aria-labelledby="mcp-h">
+          <div class="item-header"><h3 id="mcp-h">MCP servers</h3><span id="mcp-tags"></span></div>
+          <p class="hint"><code id="mcp-path"></code>. Saving also regenerates <code>.vscode/mcp.json</code> (the servers key mirror).</p>
+          <p id="mcp-hint" class="hint warn" hidden>plugin.json does not reference this file; add the key in the repository for it to be loaded.</p>
+          <div class="row"><button type="button" id="mcp-edit">Edit</button></div>
+        </section>
+        <section class="config-card" aria-labelledby="hooks-h">
+          <div class="item-header"><h3 id="hooks-h">Hooks</h3><span id="hooks-tags"></span></div>
+          <p class="hint"><code id="hooks-path"></code>. Upload the scripts it runs on the Scripts tab.</p>
+          <p id="hooks-hint" class="hint warn" hidden>plugin.json does not reference this file; add the key in the repository for it to be loaded.</p>
+          <ul id="hooks-warnings" class="warn-list"></ul>
+          <div class="row"><button type="button" id="hooks-edit">Edit</button></div>
+        </section>
+      </div>
+      <div id="messages" class="messages" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card" id="output" aria-labelledby="out-h" hidden>
+      <h2 id="out-h">3. Output</h2>
+      <section id="review" class="config-card" aria-labelledby="review-h">
+        <h3 id="review-h">Review before you download or publish</h3>
+        <p id="review-notice" class="hint warn" role="alert" hidden></p>
+        <p id="review-empty" class="hint" hidden>No hooks, MCP servers, executable files or symlinks in this package.</p>
+        <div id="review-list" class="col review-list"></div>
+        <ul id="review-warnings" class="warn-list"></ul>
+        <label id="ack-row" class="check" hidden><input type="checkbox" id="ack-exec"> <span id="ack-text"></span></label>
+      </section>
+      <div class="stages">
+        <div class="stage">
+          <h3>Save and Download Package</h3>
+          <p class="hint">Builds a ZIP in your browser from the repository plus your changes. No sign-in, nothing is uploaded.</p>
+          <p id="summary" class="summary"></p>
+          <button type="button" id="download-btn" class="primary">Save and Download Package</button>
+          <div id="download-messages" class="messages" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="stage">
+          <h3>Publish (for advanced users)</h3>
+          <p class="hint">Commits your changes to a GitHub repository. Requires a fine-grained token with <em>Contents: read and write</em> on the target repository.</p>
+          <p id="publish-account" class="hint"></p>
+
+          <form id="publish-form" class="col">
+            <div class="row">
+              <label class="grow">Target repository
+                <input id="tgt-repo" type="text" autocomplete="off" spellcheck="false" required>
+              </label>
+              <label>Branch
+                <input id="tgt-branch" type="text" autocomplete="off" spellcheck="false" value="main" required>
+              </label>
+            </div>
+            <p class="hint">No repository yet? <a id="new-repo-link" href="https://github.com/new" target="_blank" rel="noopener noreferrer">Create a new one</a>.</p>
+            <label>Commit message
+              <input id="tgt-message" type="text" value="Update plugin content via Plugin Bundler" required>
+            </label>
+            <div class="row">
+              <button type="button" id="preview-btn">Preview changes</button>
+            </div>
+            <div id="plan" hidden>
+              <p id="plan-summary"></p>
+              <ul id="plan-list" class="plan"></ul>
+              <div id="confirm-row" class="col" hidden>
+                <p class="hint warn">This commit adds or changes hooks, MCP servers, scripts or symlinks from an untrusted source.</p>
+                <label>Type <code id="confirm-target"></code> to confirm
+                  <input id="confirm-name" type="text" autocomplete="off" spellcheck="false">
+                </label>
+              </div>
+              <button type="submit" id="publish-btn" class="primary">Publish</button>
+            </div>
+          </form>
+          <progress id="publish-progress" hidden></progress>
+          <div id="publish-messages" class="messages" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="edit-dialog">
+    <form method="dialog" id="edit-form">
+      <h3 id="edit-title"></h3>
+      <textarea id="edit-text" spellcheck="false" rows="22"></textarea>
+      <div id="edit-error" class="messages" role="alert"></div>
+      <div class="row end">
+        <button type="button" id="edit-cancel">Cancel</button>
+        <button type="submit" class="primary">Apply</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="token-dialog">
+    <form id="token-form" class="col">
+      <h3>GitHub account</h3>
+      <div id="auth-out" class="col">
+        <label>Personal access token
+          <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+        </label>
+        <p class="hint">Need one? <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">Create a fine-grained token</a> with <em>Contents: read and write</em>. Classic tokens are not accepted.</p>
+        <p class="hint">The token stays in this tab's memory only and is sent only to api.github.com.</p>
+      </div>
+      <p id="auth-in" hidden>Signed in as <strong id="user-login"></strong></p>
+      <div id="auth-messages" class="messages" role="status" aria-live="polite"></div>
+      <div class="row end">
+        <button type="button" id="token-cancel">Cancel</button>
+        <button type="button" id="signout-btn" class="danger" hidden>Sign out</button>
+        <button type="submit" id="signin-btn" class="primary">Sign in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app/js/app.js"></script>
+</body>
+</html>
