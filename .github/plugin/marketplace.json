@@ -1,0 +1,19 @@
+{
+  "name": "my-marketplace",
+  "owner": {
+    "name": "Your Organization",
+    "email": "my-mail@example.com"
+  },
+  "metadata": {
+    "description": "Curated plugins",
+    "version": "0.0.1"
+  },
+  "plugins": [
+    {
+      "name": "my-awesome-copilot",
+      "description": "Agentic AI assistant plugin collecting tools, instructions, skills, and integrations for coding assistant like GitHub Copilot CLI.",
+      "version": "0.0.1",
+      "source": "."
+    }
+  ]
+}

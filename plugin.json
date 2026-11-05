@@ -1,0 +1,18 @@
+{
+  "name": "my-awesome-copilot",
+  "description": "Agentic AI assistant plugin collecting tools, instructions, skills, and integrations for coding assistant like GitHub Copilot CLI.",
+  "version": "0.0.1",
+  "author": {
+    "name": "Yumi Chan",
+    "email": "mail@yumic.de"
+  },
+  "homepage": "https://imyumichan.github.io/awesome-copilot-template",
+  "repository": "https://github.com/imyumichan/awesome-copilot-template",
+  "license": "MIT",
+  "keywords": ["ai-assistant", "agentic", "copilot-cli", "mcp", "skills", "awesome-copilot"],
+  "agents": "agents/",
+  "skills": "skills/",
+  "commands": "prompts/",
+  "hooks": "hooks/hooks.json",
+  "mcpServers": ".mcp.json"
+}
