@@ -26,3 +26,9 @@ jobs:
 
       - name: Validate plugin and list what can run code
         run: node scripts/validate-plugin.mjs
+
+      - name: Lint shell scripts
+        run: npm run lint
+
+      - name: Run infra tests
+        run: npm run test:infra

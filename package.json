@@ -1,0 +1,31 @@
+{
+  "name": "my-awesome-copilot",
+  "version": "1.0.0",
+  "description": "An agentic AI assistant plugin for GitHub Copilot CLI, and more, that bundles curated agents, instructions, skills, hooks, and MCP server integrations into a single installable package.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "test:infra": "node --test \"tests/*.test.mjs\"",
+    "lint": "bash scripts/lint-shell.sh",
+    "validate": "node scripts/validate-plugin.mjs"
+  },
+  "engines": {
+    "node": ">=21"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imyumichan/awesome-copilot-template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/imyumichan/awesome-copilot-template/issues"
+  },
+  "homepage": "https://github.com/imyumichan/awesome-copilot-template#readme"
+}

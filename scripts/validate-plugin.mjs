@@ -22,7 +22,8 @@ function isScriptFile(rel) {
 function inspectScriptForEscape(rel) {
   try {
     const text = readFileSync(join(root, rel), 'utf8');
-    for (const match of text.matchAll(/(?:^|[\s"'`])((?:~\/|\.{1,2}[\\/]|\/|[A-Za-z]:[\\/])[^\s"'`<>;&|()]+)/g)) {
+    // A quote right after "*" is a case-glob literal (e.g. *"/sh"*), not a path.
+    for (const match of text.matchAll(/(?:^|\s|(?<!\*)["'`])((?:~\/|\.{1,2}[\\/]|\/|[A-Za-z]:[\\/])[^\s"'`<>;&|()]+)/g)) {
       const token = match[1];
       if (/^https?:\/\//.test(token)) continue;
       checkCommandTargets(token, rel);
