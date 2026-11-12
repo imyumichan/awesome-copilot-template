@@ -31,5 +31,5 @@ hooks, and MCP server configurations into a single installable unit.
 
 - Validate `plugin.json` remains valid JSON after changes.
 - Ensure any new agents/skills follow the naming conventions above.
-- Keep `.mcp.json` and `.vscode/mcp.json` in sync by running `uv run scripts/sync-mcp-server-configs.py` after any MCP changes.
+- Keep `.mcp.json` and `.vscode/mcp.json` in sync by running `uv run scripts/sync-mcp-server-configs.py` after editing either one (edit only one at a time; the script syncs in both directions).
 - Test locally with `copilot plugin install ./` before committing.

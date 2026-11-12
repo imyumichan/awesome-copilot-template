@@ -81,13 +81,15 @@ The Copilot CLI plugin reads MCP servers from `.mcp.json` (`mcpServers`).
 VS Code reads `.vscode/mcp.json` (`servers`), with a different top-level key requirement.
 
 > [!NOTE]
-> Committing a change to `.mcp.json` runs `.githooks/pre-commit`, which
-> regenerates and stages `.vscode/mcp.json` in the same commit.
+> Committing a change to either `.mcp.json` or `.vscode/mcp.json` runs
+> `.githooks/pre-commit`, which regenerates and stages the other file in the
+> same commit. If both files changed and differ, the commit is refused.
 
-To regenerate it yourself:
+To sync manually (the changed file is the source):
 
 ```bash
 uv run scripts/sync-mcp-server-configs.py
+uv run scripts/sync-mcp-server-configs.py --from base  # or: --from vscode
 ```
 
 ## Contributing
