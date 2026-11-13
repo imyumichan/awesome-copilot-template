@@ -1,40 +1,20 @@
 # Contributing
 
-## Adding an Agent
+## Workflow
 
-1. Create `agents/<name>.agent.md` with YAML frontmatter:
-   ```yaml
-   ---
-   name: <name>
-   description: <one-line description>
-   tools: ["bash", "edit", "view"]
-   ---
-   ```
-2. Write the system prompt below the frontmatter.
-3. Reinstall and test: `copilot plugin install ./`
+1. Branch from `main` for plugin content. Use the `webapp` branch for changes to the bundler under `docs/`.
+2. Keep each change focused on one concern, so the review inventory stays readable.
+3. Run the checks below, then open a pull request.
 
-## Adding a Skill
+## Cautions
 
-1. Create `skills/<name>/SKILL.md` with YAML frontmatter:
-   ```yaml
-   ---
-   name: <name>
-   description: <one-line description>
-   ---
-   ```
-2. Include "When to Use" and "Instructions" sections.
-3. Reinstall and test.
-
-## Adding a Hook
-
-1. Add an entry to `hooks/hooks.json`.
-2. Create the corresponding script in `scripts/`.
-3. Make the script executable: `chmod +x scripts/<name>.sh`
-
-## Adding an MCP Server
-
-1. Add a server entry to `.mcp.json`.
-2. Document required environment variables in the entry or in `docs/`.
+- **Code runs on users' machines.** Hook commands, MCP server commands, and `scripts/*.sh` run when the plugin is installed. Review every change to them. `node scripts/validate-plugin.mjs` lists them for review.
+- **Keep MCP configs in sync.** `.mcp.json` and `.vscode/mcp.json` must match. Edit only one of them per change, then run `uv run scripts/sync-mcp-server-configs.py`. The pre-commit hook refuses a commit where both files changed and differ. Git uses the hook only when `core.hooksPath` is set, so run `git config core.hooksPath .githooks` in a fresh clone.
+- **Keep paths relative and inside the repository.** Symlinks under `.github/` must be relative and stay in the repo. Commands must not use absolute paths or paths outside the repo. The validator reports both.
+- **No secrets or personal paths.** Do not commit tokens (such as `github_pat_...`), `.env` files, or home-directory paths. Tokens entered in the web app stay in memory and are cleared on reload.
+- **Keep JSON valid.** `plugin.json`, `.mcp.json`, and `hooks/hooks.json` must parse.
+- **Shell scripts.** Make them executable, exit 0 on success, and pass ShellCheck (`npm run lint`).
+- **Web app.** Keep the limits in [docs/app/README.md](docs/app/README.md) in step with the code and tests.
 
 ## Checks
 
@@ -48,6 +28,6 @@ Run these before opening a pull request; CI runs the same:
 ## Code Review
 
 All contributions should be reviewed for:
-- Correctness of YAML frontmatter syntax
+- Valid YAML frontmatter and JSON in changed files
 - Clarity of instructions (another person should understand them)
 - No hardcoded secrets or paths

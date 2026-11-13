@@ -4,32 +4,26 @@ This file provides guidance to AI agents working within this repository.
 
 ## Repository Purpose
 
-This is a Copilot CLI plugin that packages AI tools, instructions, skills,
-hooks, and MCP server configurations into a single installable unit.
+A Copilot CLI plugin, plus a web app under `docs/` that edits and publishes it.
 
-## Directory Structure
+## Branches
 
-- `plugin.json` — Plugin manifest and packaged component configuration
-- `agents/` — Agent definition files (`*.agent.md`)
-- `instructions/` — Shared instruction/guideline files
-- `prompts/` — Reusable prompt templates (`*.prompt.md`)
-- `scripts/` — Helper scripts used by hooks or generated config sync
-- `skills/` — Skill directories, each containing a `SKILL.md`
-- `.mcp.json` — MCP server configurations for Copilot CLI
-- `.vscode/mcp.json` — VS Code-compatible mirror of `.mcp.json`
-- `hooks/hooks.json` — Hook event handlers
-- `docs/` — Documentation and other contextual resources
+- Plugin content changes target `main`.
+- The Plugin Bundler web app lives under `docs/` on the `webapp` branch.
 
-## Conventions
+## Cautions
 
-- Agent files use YAML frontmatter with `name`, `description`, and `tools` fields.
-- Skill directories are named with kebab-case and contain a `SKILL.md` with YAML frontmatter.
-- Hook scripts must be executable and exit 0 on success.
-- Keep instructions focused and concise — one concern per file.
+- Hook commands, MCP server commands, and scripts run on users' machines. Do not add or change them without a clear reason, and call out any change in the summary.
+- Keep `.mcp.json` and `.vscode/mcp.json` in sync. Edit only one per change, then run `uv run scripts/sync-mcp-server-configs.py`.
+- Do not commit secrets, tokens, or absolute or home-directory paths.
+- Keep symlinks under `.github/` relative and inside the repository.
+- Do not rename files under `docs/` without updating the links in the README and `docs/app/README.md`.
+- Do not push or open pull requests unless the user asks.
 
-## When Editing
+## Before Finishing a Change
 
-- Validate `plugin.json` remains valid JSON after changes.
-- Ensure any new agents/skills follow the naming conventions above.
-- Keep `.mcp.json` and `.vscode/mcp.json` in sync by running `uv run scripts/sync-mcp-server-configs.py` after editing either one (edit only one at a time; the script syncs in both directions).
-- Test locally with `copilot plugin install ./` before committing.
+- `node scripts/validate-plugin.mjs`
+- `npm run lint`
+- `npm run test:infra`
+- `npm run test:app` when `docs/app/` changes.
+- `copilot plugin install ./` for plugin content changes.

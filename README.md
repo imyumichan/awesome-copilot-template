@@ -2,7 +2,7 @@
 
 A self-contained, ready-to-use template. Clone it, replace the sample agent,
 skill, prompt, and instruction, and you have a working assistant plugin — no
-extra scaffolding to assemble.
+extra scaffolding to assemble. A [web app](https://imyumichan.github.io/awesome-copilot-template/) can also edit and publish it.
 
 The template is optimised for two surfaces, with more planned. The same files
 serve both. `.github/agents`, `.github/skills`, `.github/instructions`,
@@ -30,6 +30,13 @@ Every component is already wired and filled with a working sample:
 
 Rename the samples and edit their frontmatter. You do not need to create
 directories, manifests, or discovery links.
+
+### Plugin Bundler Web App
+
+A light-weight web app (see [demo here](https://imyumichan.github.io/awesome-copilot-template/)) to edit this plugin: load a plugin repository, change its items and configuration, then download the result as a ZIP or publish it to GitHub.
+
+- Source: [`docs/`](https://github.com/imyumichan/awesome-copilot-template/tree/webapp/docs) under `webapp` branch
+- Guide: [docs/app/README.md](https://github.com/imyumichan/awesome-copilot-template/blob/webapp/docs/app/README.md)
 
 ## Quick start
 
